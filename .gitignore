@@ -1,0 +1,8 @@
+node_modules/
+dist/*
+!dist/.gitkeep
+.idea/
+.parcel-cache/
+parcel-bundle-reports/
+.DS_Store
+

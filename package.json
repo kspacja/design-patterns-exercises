@@ -1,0 +1,32 @@
+{
+  "name": "design-patterns-exercises",
+  "version": "1.0.0",
+  "browserslist": "> 0.5%, last 2 versions, not dead",
+  "scripts": {
+    "prebuild": "rm -rf dist/* && touch ./dist/.gitkeep",
+    "develop": "parcel --port 8080 --hmr-port 8090 ./public/index.html --dist-dir ./dist/",
+    "lint": "eslint src",
+    "lint:summary": "eslint src -f summary",
+    "lint:fix": "eslint src --fix --quiet",
+    "precommit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.ts": "eslint --quiet"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.57.0",
+    "@typescript-eslint/parser": "^5.57.0",
+    "eslint": "^8.32.0",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-typescript": "^0.14.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^13.1.0",
+    "parcel": "^2.8.3",
+    "prettier": "^2.8.3",
+    "typescript": "^4.9.5"
+  },
+  "engines": {
+    "node": ">=14.17.0"
+  }
+}
