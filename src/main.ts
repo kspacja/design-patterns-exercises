@@ -1,3 +1,3 @@
-import './builder/e1/solution';
+import './builder/e1/example-solution';
 
 export {};
