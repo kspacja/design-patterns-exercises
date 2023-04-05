@@ -1,4 +1,4 @@
-import { DocumentLineTokens, TokenType } from '../types';
+import { TokenType } from '../types';
 import { Builder } from './types';
 
 const globalStyle = `
@@ -11,16 +11,7 @@ const globalStyle = `
 
 export default class DOMBuilder implements Builder<HTMLElement> {
   result: HTMLElement = document.createElement('div');
-  currentLevel = 0;
   currentParent: HTMLElement = this.result;
-
-  constructor() {
-    const styleNode = document.createElement('style');
-    styleNode.appendChild(document.createTextNode(globalStyle));
-
-    this.result.append(styleNode);
-    this.result.className = 'custom-dom';
-  }
 
   private createElement(type: TokenType, value: string): HTMLElement {
     let div: HTMLElement;
@@ -45,23 +36,29 @@ export default class DOMBuilder implements Builder<HTMLElement> {
     return div;
   }
 
-  buildElement(lineTokens: DocumentLineTokens) {
-    const [type, value, level] = lineTokens;
+  reset() {
+    const styleNode = document.createElement('style');
+    styleNode.appendChild(document.createTextNode(globalStyle));
 
-    if (level > this.currentLevel) {
-      this.currentParent = this.currentParent.children[
-        this.currentParent.children.length - 1
-      ] as HTMLElement;
-      this.currentLevel = level;
-    }
+    this.result = document.createElement('div');
+    this.result.append(styleNode);
+    this.result.className = 'custom-dom';
 
-    if (level < this.currentLevel) {
-      this.currentParent = this.currentParent.parentElement || this.result;
-      this.currentLevel = level;
-    }
+    this.currentParent = this.result;
+  }
 
+  moveUp() {
+    this.currentParent = this.currentParent.parentElement || this.result;
+  }
+
+  moveDown() {
+    this.currentParent = this.currentParent.children[
+      this.currentParent.children.length - 1
+    ] as HTMLElement;
+  }
+
+  appendElement(type: TokenType, value: string) {
     const element = this.createElement(type, value);
-
     this.currentParent.append(element);
   }
 

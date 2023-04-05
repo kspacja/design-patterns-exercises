@@ -1,6 +1,9 @@
-import { DocumentLineTokens } from '../types';
+import { TokenType } from '../types';
 
 export interface Builder<T> {
-  buildElement: (lineTokens: DocumentLineTokens) => void;
+  appendElement: (type: TokenType, value: string) => void;
+  moveUp: () => void;
+  moveDown: () => void;
+  reset: () => void;
   get: () => T;
 }

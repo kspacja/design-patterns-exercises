@@ -1,4 +1,4 @@
-import { DocumentLineTokens, TokenType } from '../types';
+import { TokenType } from '../types';
 import { Builder } from './types';
 
 export interface JSONDoc {
@@ -10,7 +10,6 @@ export interface JSONDoc {
 
 export default class JSONBuilder implements Builder<JSONDoc> {
   result: JSONDoc = { children: [] };
-  currentLevel = 0;
   currentParent: JSONDoc = this.result;
 
   private createElement(
@@ -26,23 +25,23 @@ export default class JSONBuilder implements Builder<JSONDoc> {
     };
   }
 
-  buildElement(lineTokens: DocumentLineTokens) {
-    const [type, value, level] = lineTokens;
+  reset() {
+    this.result = { children: [] };
+    this.currentParent = this.result;
+  }
 
-    if (level > this.currentLevel) {
-      this.currentParent =
-        this.currentParent.children[this.currentParent.children.length - 1];
-      this.currentLevel = level;
-    }
-
-    if (level < this.currentLevel) {
-      this.currentParent = this.currentParent.parent || this.result;
-      this.currentLevel = level;
-    }
-
+  appendElement(type: TokenType, value: string) {
     const element = this.createElement(type, value, this.currentParent);
-
     this.currentParent.children.push(element);
+  }
+
+  moveDown() {
+    this.currentParent =
+      this.currentParent.children[this.currentParent.children.length - 1];
+  }
+
+  moveUp() {
+    this.currentParent = this.currentParent.parent || this.result;
   }
 
   get() {

@@ -4,18 +4,42 @@ import { textDocument } from '../input';
 import { Builder } from './types';
 import JSONBuilder from './JSONBuilder';
 import DOMBuilder from './DOMBuilder';
+import FlatBuilder from './FlatBuilder';
 
-function buildDocument<T>(textDocument: string, builder: Builder<T>) {
-  const parsedDoc = parseDocument(textDocument);
+class Director<T> {
+  constructor(private builder: Builder<T>) {}
+  currentLevel = 0;
 
-  parsedDoc.forEach((lineTokens) => {
-    builder.buildElement(lineTokens);
-  });
+  buildDocument(textDocument: string) {
+    const parsedDoc = parseDocument(textDocument);
 
-  return builder.get();
+    this.builder.reset();
+
+    parsedDoc.forEach(([type, value, level]) => {
+      if (level > this.currentLevel) {
+        this.builder.moveDown();
+        this.currentLevel = level;
+      }
+
+      if (level < this.currentLevel) {
+        this.builder.moveUp();
+        this.currentLevel = level;
+      }
+
+      this.builder.appendElement(type, value);
+    });
+
+    return this.builder.get();
+  }
 }
 
-console.log(buildDocument(textDocument, new JSONBuilder()));
+const jsonDirector = new Director(new JSONBuilder());
+console.log(jsonDirector.buildDocument(textDocument));
 
-const DOMDocument = buildDocument(textDocument, new DOMBuilder());
+const flatDirector = new Director(new FlatBuilder());
+console.log(flatDirector.buildDocument(textDocument));
+
+const director = new Director(new DOMBuilder());
+const DOMDocument = director.buildDocument(textDocument);
+
 document.getElementById('root')?.append(DOMDocument);
